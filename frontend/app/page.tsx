@@ -238,32 +238,32 @@ const copyToClipboard = (text: string, setCopied: (value: boolean) => void) => {
                       <div className="space-y-1">
                         <div className="flex items-center">
                           <span className="text-xs text-blue-300 mr-2">LAT </span>
-                          <span className="font-mono text-lg">{Number(decodedResult.latitude).toFixed(6)}</span>
+                          <span className="font-mono text-lg text-white">{Number(decodedResult.latitude).toFixed(6)}</span>
                         </div>
                         <div className="flex items-center">
                           <span className="text-xs text-blue-300 mr-2">LNG </span>
-                          <span className="font-mono text-lg">{Number(decodedResult.longitude).toFixed(6)}</span>
+                          <span className="font-mono text-lg text-white">{Number(decodedResult.longitude).toFixed(6)}</span>
                         </div>
                       </div>
                       <Button
-  variant="ghost"
-  size="sm"
-  onClick={() =>
-    copyToClipboard(
-      `${Number(decodedResult.latitude).toFixed(6)}, ${Number(decodedResult.longitude).toFixed(6)}`,
-      setCopiedCoords
-    )
-  }
-  className="hover:bg-white/10 text-blue-300 hover:text-white"
->
-  {copiedCoords ? (
-    <>
-      <Check className="h-4 w-4 text-green-400" />
-    </>
-  ) : (
-    <Copy className="h-4 w-4" />
-  )}
-</Button>
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            copyToClipboard(
+                              `${Number(decodedResult.latitude).toFixed(6)}, ${Number(decodedResult.longitude).toFixed(6)}`,
+                              setCopiedCoords
+                            )
+                          }
+                          className="hover:bg-white/10 text-blue-300 hover:text-white"
+                        >
+                          {copiedCoords ? (
+                            <>
+                              <Check className="h-4 w-4 text-green-400" />
+                            </>
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </Button>
 
 
                     </div>
