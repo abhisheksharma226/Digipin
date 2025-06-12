@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { MapPin, Copy, Loader2, QrCode, LocateFixed, Share2, ArrowRight } from "lucide-react"
+import { MapPin, Copy, Loader2, QrCode, LocateFixed, Share2, ArrowRight, Check } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { AnimatePresence, motion } from "framer-motion"
 import { useMobile } from "@/hooks/use-mobile"
@@ -29,6 +29,9 @@ export default function DigiPinConverter() {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
   const isMobile = useMobile()
+  const [copiedPin, setCopiedPin] = useState(false);
+  const [copiedCoords, setCopiedCoords] = useState(false);
+
 
   const simulateLoading = (callback: () => void) => {
     setIsLoading(true)
@@ -100,13 +103,21 @@ export default function DigiPinConverter() {
     })
   }
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    toast({
-      title: "Copied",
-      description: text,
-    })
-  }
+const copyToClipboard = (text: string, setCopied: (value: boolean) => void) => {
+  navigator.clipboard.writeText(text);
+  setCopied(true);
+  toast({
+    title: "Copied",
+    description: text,
+    duration: 2000,
+  });
+
+  setTimeout(() => {
+    setCopied(false);
+  }, 2000);
+};
+
+
 
 
 
@@ -132,11 +143,11 @@ export default function DigiPinConverter() {
               <MapPin className="h-8 w-8 text-white" />
             </div>
           </div>
-          <h1 className="text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
-            DigiPin Converter
-          </h1>
+          <h1 className="text-5xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 leading-tight">
+              Convert Location to DigiPin + QR Instantly
+            </h1>
           <p className="text-lg text-blue-100/80 max-w-2xl mx-auto">
-            Transform coordinates into compact DigiPin codes and back with precision and ease
+            Turn your coordinates into smart DigiPins with QR codes and Google Maps links — seamless, stylish, and ready to share!
           </p>
         </motion.div>
 
@@ -232,17 +243,26 @@ export default function DigiPinConverter() {
                         </div>
                       </div>
                       <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          copyToClipboard(
-                            `${Number(decodedResult.latitude).toFixed(6)}, ${Number(decodedResult.longitude).toFixed(6)}`
-                          )
-                        }
-                        className="hover:bg-white/10 text-blue-300 hover:text-white"
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
+  variant="ghost"
+  size="sm"
+  onClick={() =>
+    copyToClipboard(
+      `${Number(decodedResult.latitude).toFixed(6)}, ${Number(decodedResult.longitude).toFixed(6)}`,
+      setCopiedCoords
+    )
+  }
+  className="hover:bg-white/10 text-blue-300 hover:text-white"
+>
+  {copiedCoords ? (
+    <>
+      <Check className="h-4 w-4 text-green-400" />
+    </>
+  ) : (
+    <Copy className="h-4 w-4" />
+  )}
+</Button>
+
+
                     </div>
                   </div>
 
@@ -255,14 +275,6 @@ export default function DigiPinConverter() {
                     >
                       <MapPin className="h-4 w-4 mr-2" />
                       Open in Maps
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-white/5 border-white/10 hover:bg-white/10 text-blue-300 hover:text-white"
-                      onClick={() => copyToClipboard(decodedResult.mapsUrl)}
-                    >
-                      <Share2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -341,8 +353,29 @@ export default function DigiPinConverter() {
                               </>
                             )}
                           </Button>
-                        </div>
+                          <Button
+                                    onClick={() => {
+                                      if (navigator.geolocation) {
+                                        navigator.geolocation.getCurrentPosition(
+                                          (position) => {
+                                            setEncodeLatInput(position.coords.latitude.toFixed(6));
+                                            setEncodeLngInput(position.coords.longitude.toFixed(6));
+                                          },
+                                          (error) => {
+                                            alert("Unable to fetch location. Please allow GPS or enter manually.");
+                                            console.error(error);
+                                          }
+                                        );
+                                      } else {
+                                        alert("Geolocation is not supported by this browser.");
+                                      }
+                                    }}
+                                    className="w-full md:w-auto text-sm font-medium mt-2 bg-white/10 hover:bg-white/20 text-blue-100 px-4 py-2 rounded-lg transition-all"
+                                  >
+                                    📍 Use My Current Location
+                                  </Button>
 
+                        </div>
                         <AnimatePresence>
                           {encodedDigiPin && (
                             <motion.div
@@ -361,14 +394,25 @@ export default function DigiPinConverter() {
                                         {encodedDigiPin}
                                       </span>
                                       <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => copyToClipboard(encodedDigiPin)}
-                                        className="mt-3 hover:bg-white/10 text-blue-300 hover:text-white"
-                                      >
-                                        <Copy className="h-4 w-4 mr-2" />
-                                        Copy DigiPin
-                                      </Button>
+  variant="ghost"
+  size="sm"
+  onClick={() => copyToClipboard(encodedDigiPin, setCopiedPin)}
+  className="mt-3 hover:bg-white/10 text-blue-300 hover:text-white"
+>
+  {copiedPin ? (
+    <>
+      <Check className="h-4 w-4 mr-2 text-green-400" />
+      Copied!
+    </>
+  ) : (
+    <>
+      <Copy className="h-4 w-4 mr-2" />
+      Copy DigiPin
+    </>
+  )}
+</Button>
+
+                                      
                                     </div>
                                   </div>
                                 </div>
@@ -392,7 +436,17 @@ export default function DigiPinConverter() {
           transition={{ delay: 0.8, duration: 0.6 }}
           className="mt-16 text-center text-sm text-blue-200/60"
         >
-          <p>DigiPin Converter • Precision Location Technology</p>
+         <p className="text-sm text-blue-200 text-center">
+              DigiPin by <a 
+                href="https://github.com/abhisheksharma226" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline hover:text-white transition-colors"
+              >
+                Abhishek Sharma
+              </a> • Precision Location Tool
+            </p>
+
         </motion.div>
       </div>
     </div>
