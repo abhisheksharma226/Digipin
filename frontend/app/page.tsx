@@ -10,6 +10,7 @@ import { MapPin, Copy, Loader2, QrCode, LocateFixed, Share2, ArrowRight } from "
 import { useToast } from "@/hooks/use-toast"
 import { AnimatePresence, motion } from "framer-motion"
 import { useMobile } from "@/hooks/use-mobile"
+import { API_BASE_URL } from "@/lib/baseUrl"
 
 export default function DigiPinConverter() {
   const [decodeInput, setDecodeInput] = useState("")
@@ -52,7 +53,7 @@ export default function DigiPinConverter() {
     }
 
     try {
-      const res = await fetch(`http://localhost:5001/api/digipin/encode?latitude=${lat}&longitude=${lng}`)
+      const res = await fetch(`${API_BASE_URL}/api/digipin/encode?latitude=${lat}&longitude=${lng}`)
       const data = await res.json()
 
       if (data.digipin) {
@@ -77,7 +78,7 @@ export default function DigiPinConverter() {
         // const pin = decodeInput.trim()
         const pin = decodeInput.trim()
 
-        const res = await fetch(`http://localhost:5001/api/digipin/qrcode/${pin}`)
+        const res = await fetch(`${API_BASE_URL}/api/digipin/qrcode/${pin}`)
         const data = await res.json()
 
         if (data.latitude && data.longitude && data.qrImageBase64) {
