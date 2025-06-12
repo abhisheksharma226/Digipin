@@ -31,6 +31,8 @@ export default function DigiPinConverter() {
   const isMobile = useMobile()
   const [copiedPin, setCopiedPin] = useState(false);
   const [copiedCoords, setCopiedCoords] = useState(false);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+
 
 
   const simulateLoading = (callback: () => void) => {
@@ -161,14 +163,14 @@ const copyToClipboard = (text: string, setCopied: (value: boolean) => void) => {
                   className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg py-3 px-6 transition-all duration-300 ease-out"
                 >
                   <MapPin className="h-4 w-4 mr-2" />
-                  Decode DigiPin
+                  Get Your Location QR
                 </TabsTrigger>
                 <TabsTrigger
                   value="encode"
                   className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white rounded-lg py-3 px-6 transition-all duration-300 ease-out"
                 >
                   <LocateFixed className="h-4 w-4 mr-2" />
-                  Encode Coordinates
+                  Get Your DigiPin Code
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -193,7 +195,7 @@ const copyToClipboard = (text: string, setCopied: (value: boolean) => void) => {
           <div className="relative">
             <Input
               id="digipin-input"
-              placeholder="e.g., DPABCD1234EFGH"
+              placeholder="e.g., 25K-834-CTCF"
               value={decodeInput}
               onChange={(e) => setDecodeInput(e.target.value)}
               className="bg-white/5 border-white/10 text-white placeholder:text-white/50 h-14 pl-12 pr-4 text-lg rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -276,6 +278,24 @@ const copyToClipboard = (text: string, setCopied: (value: boolean) => void) => {
                       <MapPin className="h-4 w-4 mr-2" />
                       Open in Maps
                     </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-white/5 border-white/10 hover:bg-white/10 text-blue-300 hover:text-white"
+                        onClick={() => {
+                          if (navigator.share) {
+                            navigator.share({
+                              title: "My Location",
+                              text: "Check out this location",
+                              url: decodedResult.mapsUrl,
+                            }).catch((err) => console.error("Error sharing:", err));
+                          } else {
+                            alert("Sharing is not supported on this device.");
+                          }
+                        }}
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </Button>
                   </div>
                 </div>
 
@@ -354,26 +374,32 @@ const copyToClipboard = (text: string, setCopied: (value: boolean) => void) => {
                             )}
                           </Button>
                           <Button
-                                    onClick={() => {
-                                      if (navigator.geolocation) {
-                                        navigator.geolocation.getCurrentPosition(
-                                          (position) => {
-                                            setEncodeLatInput(position.coords.latitude.toFixed(6));
-                                            setEncodeLngInput(position.coords.longitude.toFixed(6));
-                                          },
-                                          (error) => {
-                                            alert("Unable to fetch location. Please allow GPS or enter manually.");
-                                            console.error(error);
-                                          }
-                                        );
-                                      } else {
-                                        alert("Geolocation is not supported by this browser.");
-                                      }
-                                    }}
-                                    className="w-full md:w-auto text-sm font-medium mt-2 bg-white/10 hover:bg-white/20 text-blue-100 px-4 py-2 rounded-lg transition-all"
-                                  >
-                                    📍 Use My Current Location
-                                  </Button>
+                                onClick={() => {
+                                  if (!navigator.geolocation) {
+                                    alert("Geolocation is not supported by this browser.");
+                                    return;
+                                  }
+
+                                  setIsFetchingLocation(true); // start loading
+
+                                  navigator.geolocation.getCurrentPosition(
+                                    (position) => {
+                                      setEncodeLatInput(position.coords.latitude.toFixed(6));
+                                      setEncodeLngInput(position.coords.longitude.toFixed(6));
+                                      setIsFetchingLocation(false); // done loading
+                                    },
+                                    (error) => {
+                                      alert("Unable to fetch location. Please allow GPS or enter manually.");
+                                      console.error(error);
+                                      setIsFetchingLocation(false); // stop loading on error
+                                    }
+                                  );
+                                }}
+                                className="w-full md:w-auto text-sm font-medium mt-2 bg-white/10 hover:bg-white/20 text-blue-100 px-4 py-2 rounded-lg transition-all"
+                              >
+                                {isFetchingLocation ? "📍 Fetching..." : "📍 Use My Current Location"}
+                              </Button>
+
 
                         </div>
                         <AnimatePresence>
