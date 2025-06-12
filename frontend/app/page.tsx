@@ -1,5 +1,6 @@
 "use client"
 
+import { Analytics } from "@vercel/analytics/next"
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
