@@ -19,11 +19,12 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
-app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST'],
-  credentials: true, // if you're using cookies
-}));
+app.use(
+  cors({
+    origin: "https://digipin-qr-location.vercel.app",
+  })
+);
+
 
 
 // Swagger Docs Route
