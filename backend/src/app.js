@@ -26,6 +26,10 @@ app.use(
 );
 
 
+app.get('/', (req, res) => {
+  res.send("Hello from DigiPin Backend !!");
+});
+
 
 // Swagger Docs Route
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
