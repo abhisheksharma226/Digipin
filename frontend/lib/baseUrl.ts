@@ -1,1 +1,1 @@
-export const API_BASE_URL = "https://digipin-614w.onrender.com";
+export const API_BASE_URL = "https://digipin-qr-location.onrender.com";
