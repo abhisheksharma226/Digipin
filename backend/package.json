@@ -1,0 +1,39 @@
+{
+  "name": "digipin",
+  "version": "1.0.0",
+  "description": "<div align=\"center\" style=\"display: flex; justify-content: center; align-items: center; gap: 20px;\">   <img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Ministry_of_Communications_India.svg/1920px-Ministry_of_Communications_India.svg.png\" alt=\"Ministry of Communications\" width=\"240\"/>   <img src=\"https://dev.cept.gov.in/mydigipin/_next/image?url=%2Fmydigipin%2Fimages%2Findiapost_logo_v2.webp&w=1920&q=75\" alt=\"India Post\" width=\"120\"/> </div>",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "digipin": "file:",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.10",
+    "qrcode": "^1.5.4",
+    "swagger-ui-express": "^5.0.1",
+    "yaml": "^2.7.1",
+    "yamljs": "^0.3.0"
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abhisheksharma226/Digipin.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/abhisheksharma226/Digipin/issues"
+  },
+  "homepage": "https://github.com/abhisheksharma226/Digipin#readme"
+}
